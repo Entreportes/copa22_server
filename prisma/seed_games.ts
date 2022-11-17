@@ -21,7 +21,7 @@ const games = [
     {
       date: "2022-11-21T19:00:00.930Z",
       firstTeamCountryCode: "US",
-      secondTeamCountryCode: "WA" //VERIFICAR GALES
+      secondTeamCountryCode: "gb-wls" //VERIFICAR GALES
     },
     {
       date: "2022-11-22T10:00:00.930Z",
@@ -85,7 +85,7 @@ const games = [
     },
     {
       date: "2022-11-25T10:00:00.930Z",
-      firstTeamCountryCode: "WA",
+      firstTeamCountryCode: "gb-wls",
       secondTeamCountryCode: "IR"
     },
     {
@@ -177,7 +177,7 @@ const games = [
     },
     {
       date: "2022-11-29T19:00:00.930Z",
-      firstTeamCountryCode: "WA",
+      firstTeamCountryCode: "gb-wls",
       secondTeamCountryCode: "GB"
     },
     {
