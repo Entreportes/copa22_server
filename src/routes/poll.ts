@@ -183,6 +183,47 @@ export async function pollRoutes(fastify: FastifyInstance){
                 },
             }
         })
+        return {poll}
+    })
+
+    fastify.get('/polls/:id/ranking', { //ranking bolão
+        onRequest: [authenticate],
+    }, async (request) => {
+        const getPollParams = z.object({
+            id: z.string(),
+        })
+        const { id } = getPollParams.parse(request.params) // /id do bolao
+
+        const poll = await prisma.poll.findUnique({ //retorna dados do bolao
+            where: {
+                id, //id: id(request.params)
+            },
+            include: { //faz nao retornar so os polls mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
+                
+                _count: { //enviar a quantidade de participantes do bolao
+                    select: {
+                        participants: true,
+                    }
+                },
+                participants:{
+                    orderBy:{
+                        score:'desc'
+                    },
+                    select: {
+                        id: true,
+                        score: true,
+                        user: {
+                            select: {
+                                avatarUrl: true,
+                                name: true,
+                            }
+                        }
+                    }
+                },
+
+
+            }
+        })
         console.log('entrou',poll)
         return {poll}
     })

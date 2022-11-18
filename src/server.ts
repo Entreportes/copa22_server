@@ -36,7 +36,8 @@ async function bootstrap(){
 
 
     
-    await fastify.listen({port: 3333, host: '0.0.0.0'})
+    //await fastify.listen({port: 3333, host: '0.0.0.0'}) //MOBILE
+    await fastify.listen({port: 3333, host: '192.168.0.12'})  //WEB
 }
 
 bootstrap()
