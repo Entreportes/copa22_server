@@ -224,7 +224,6 @@ export async function pollRoutes(fastify: FastifyInstance){
 
             }
         })
-        console.log('entrou',poll)
         return {poll}
     })
 
