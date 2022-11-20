@@ -5,14 +5,14 @@ import { prisma } from "../lib/prisma"
 import { authenticate } from "../plugins/authenticate"
 
 export async function pollRoutes(fastify: FastifyInstance){
-    fastify.get('/polls/count',async () => {
-        const count = await prisma.poll.count()
+    fastify.get('/pools/count',async () => {
+        const count = await prisma.pool.count()
         
         return { count }
         
     }) 
 
-    fastify.post('/polls',async (request, reply) => {
+    fastify.post('/pools',async (request, reply) => {
         const createPollBody = z.object({
             title: z.string(),
         })
@@ -26,7 +26,7 @@ export async function pollRoutes(fastify: FastifyInstance){
         //verificar usersId
         try{ 
             await request.jwtVerify()           
-            await prisma.poll.create({
+            await prisma.pool.create({
                 data:{
                     title,
                     code,
@@ -40,7 +40,7 @@ export async function pollRoutes(fastify: FastifyInstance){
                 }
             })
         } catch {
-            await prisma.poll.create({
+            await prisma.pool.create({
                 data:{
                     title,
                     code,
@@ -53,7 +53,7 @@ export async function pollRoutes(fastify: FastifyInstance){
     })
 
 
-    fastify.post('/polls/join', {
+    fastify.post('/pools/join', {
         onRequest: [authenticate]
     },async (request,reply) => {
         const joinPollBody = z.object({
@@ -61,7 +61,7 @@ export async function pollRoutes(fastify: FastifyInstance){
         })
         const {code} = joinPollBody.parse(request.body)
 
-        const poll = await prisma.poll.findUnique({
+        const pool = await prisma.pool.findUnique({
             where: {
                 code,
             },
@@ -73,22 +73,22 @@ export async function pollRoutes(fastify: FastifyInstance){
                 }
             }
         })
-        if(!poll){
+        if(!pool){
             return reply.status(400).send({
                 message: 'Bolão não encontrado'
             })
         }
 
-        if(poll.participants.length > 0){ //usuario ja participa do bolão
+        if(pool.participants.length > 0){ //usuario ja participa do bolão
             return reply.status(400).send({
                 message: 'Você já participa do bolão'
             })
         }
 
-        if (!poll.ownerId){ //se nao tem dono, o primeiro que logar eh dono
-            await prisma.poll.update({
+        if (!pool.ownerId){ //se nao tem dono, o primeiro que logar eh dono
+            await prisma.pool.update({
                 where:{
-                    id: poll.id,
+                    id: pool.id,
                 },
                 data: {
                     ownerId: request.user.sub
@@ -99,7 +99,7 @@ export async function pollRoutes(fastify: FastifyInstance){
 
         await prisma.participant.create({
             data: {
-                pollId: poll.id,
+                pollId: pool.id,
                 usersId: request.user.sub,
             }
         })
@@ -107,10 +107,10 @@ export async function pollRoutes(fastify: FastifyInstance){
         return reply.status(201).send()
     })
 
-    fastify.get('/polls',{ //parametro de entrada pelo token que tem o userId (sub), user name e user avatarUrl
+    fastify.get('/pools',{ //parametro de entrada pelo token que tem o userId (sub), user name e user avatarUrl
         onRequest: [authenticate]
     }, async (request) => {
-        const polls = await prisma.poll.findMany({ //retorna todos os boloes onde o userID(user.sub) tem participacao
+        const pools = await prisma.pool.findMany({ //retorna todos os boloes onde o userID(user.sub) tem participacao
             where: {
                 participants: {
                     some: { //algum seja igual
@@ -118,7 +118,7 @@ export async function pollRoutes(fastify: FastifyInstance){
                     }
                 }
             },
-            include: { //faz nao retornar so os polls mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
+            include: { //faz nao retornar so os pools mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
                 
                 _count: { //enviar a quantidade de participantes do bolao
                     select: {
@@ -143,10 +143,10 @@ export async function pollRoutes(fastify: FastifyInstance){
                 },
             }
         })
-        return {polls}
+        return {pools}
     })
 
-    fastify.get('/polls/:id', { //detalhes do bolão
+    fastify.get('/pools/:id', { //detalhes do bolão
         onRequest: [authenticate],
     }, async (request) => {
         const getPollParams = z.object({
@@ -154,11 +154,11 @@ export async function pollRoutes(fastify: FastifyInstance){
         })
         const { id } = getPollParams.parse(request.params) // /id do bolao
 
-        const poll = await prisma.poll.findUnique({ //retorna dados do bolao
+        const pool = await prisma.pool.findUnique({ //retorna dados do bolao
             where: {
                 id, //id: id(request.params)
             },
-            include: { //faz nao retornar so os polls mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
+            include: { //faz nao retornar so os pools mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
                 
                 _count: { //enviar a quantidade de participantes do bolao
                     select: {
@@ -183,10 +183,10 @@ export async function pollRoutes(fastify: FastifyInstance){
                 },
             }
         })
-        return {poll}
+        return {pool}
     })
 
-    fastify.get('/polls/:id/ranking', { //ranking bolão
+    fastify.get('/pools/:id/ranking', { //ranking bolão
         onRequest: [authenticate],
     }, async (request) => {
         const getPollParams = z.object({
@@ -194,11 +194,11 @@ export async function pollRoutes(fastify: FastifyInstance){
         })
         const { id } = getPollParams.parse(request.params) // /id do bolao
 
-        const poll = await prisma.poll.findUnique({ //retorna dados do bolao
+        const pool = await prisma.pool.findUnique({ //retorna dados do bolao
             where: {
                 id, //id: id(request.params)
             },
-            include: { //faz nao retornar so os polls mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
+            include: { //faz nao retornar so os pools mas o que estiver aqui tbm, no nosso caso o nome do criador (para a interface)
                 
                 _count: { //enviar a quantidade de participantes do bolao
                     select: {
@@ -224,7 +224,7 @@ export async function pollRoutes(fastify: FastifyInstance){
 
             }
         })
-        return {poll}
+        return {pool}
     })
 
 

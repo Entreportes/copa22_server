@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import jwt from '@fastify/jwt'
-import { pollRoutes } from './routes/poll'
+import { pollRoutes } from './routes/pool'
 import { authRoutes } from './routes/auth'
 import { gameRoutes } from './routes/game'
 import { guessRoutes } from './routes/guess'
@@ -18,7 +18,7 @@ async function bootstrap(){
     })
     //localhost:3333/
 
-    //localhost:3333/polls/count
+    //localhost:3333/pools/count
 
     // RETIRAR EM PRODUÇÃO
     await fastify.register(jwt, {
@@ -36,7 +36,8 @@ async function bootstrap(){
 
 
     
-    await fastify.listen({port: 3333})
+    //await fastify.listen({port: 3333, host: '0.0.0.0'}) //MOBILE
+    await fastify.listen({port: 3333, host: '192.168.0.13'})  //WEB
 }
 
 bootstrap()

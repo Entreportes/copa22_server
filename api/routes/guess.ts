@@ -10,7 +10,7 @@ export async function guessRoutes(fastify: FastifyInstance){
     }) 
 
 
-    fastify.post('/polls/:pollId/games/:gameId/guesses',{ //criar palpite (vindo pelo body) de determinado bolão, de determinado jogo e de determinado usuario
+    fastify.post('/pools/:pollId/games/:gameId/guesses',{ //criar palpite (vindo pelo body) de determinado bolão, de determinado jogo e de determinado usuario
         onRequest: [authenticate] //determinando o usuario
     }, async (request,reply) => {
 

@@ -5,7 +5,7 @@ import { authenticate } from "../plugins/authenticate"
 
 export async function gameRoutes(fastify: FastifyInstance){
 
-    fastify.get('/polls/:id/games',{  //listagem de jogos de um bolão
+    fastify.get('/pools/:id/games',{  //listagem de jogos de um bolão
         onRequest: [authenticate],
     }, async (request) => {
         const getPollsParams = z.object({

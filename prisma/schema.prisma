@@ -15,7 +15,7 @@ datasource db {
 }
 
 //apostas
-model Poll {
+model Pool {
   id        String   @id @default(cuid())
   title     String
   code      String   @unique
@@ -35,7 +35,7 @@ model Participant {
 
   guesses Guess[]
   user    User    @relation(fields: [usersId], references: [id])
-  poll    Poll    @relation(fields: [pollId], references: [id])
+  pool    Pool    @relation(fields: [pollId], references: [id])
 
   @@unique([usersId, pollId])
 }
@@ -49,7 +49,7 @@ model User {
   createdAt DateTime @default(now())
 
   participatingAt Participant[]
-  ownPolls        Poll[]
+  ownPools        Pool[]
 }
 
 model Game {
